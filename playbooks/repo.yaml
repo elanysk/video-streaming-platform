@@ -1,0 +1,25 @@
+- name: Deploy Flask Application Environment
+  hosts: remote_server
+  become: yes  # Run tasks as root
+
+  tasks:
+    - name: Clone the repository
+      git:
+        repo: "https://{{ github_username }}:{{ github_pat }}@github.com/{{ github_username }}/{{ github_repo }}.git"
+        dest: /root/cse356-warmup2/
+        version: main
+      vars:
+        github_username: "patrick42702"
+        github_pat: "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"
+        github_repo: "cse356-warmup2"
+
+    - name: Change to the directory containing docker-compose.yml and build
+      ansible.builtin.command:
+        cmd: docker compose build
+        chdir: /root/cse356-warmup2
+
+    - name: Start services with Docker Compose
+      ansible.builtin.command:
+        cmd: docker compose up -d
+        chdir: /root/cse356-warmup2
+
